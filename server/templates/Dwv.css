@@ -1,0 +1,122 @@
+button{
+    width: 120px;  
+    padding:6px; 
+    margin: 11px; 
+    background-color:rgb(173, 118, 184);  
+    border-color: plum;  
+    color: #fff;  
+    -moz-border-radius: 10px;  
+    -webkit-border-radius: 10px;  
+    border-radius: 10px; /* future proofing */  
+    -khtml-border-radius: 10px; /* for old Konqueror browsers */  
+    text-align: center;  
+    vertical-align: middle;  
+    border: 1px solid transparent;  
+    font-weight: 500;  
+    font-size:100%  
+}
+#info{
+    width: 98%;
+    height: 200px;
+    margin: 0px auto; 
+    background:rgb(223, 217, 217);
+}
+
+.title{
+    margin: 5px;
+}
+#pinfo ul{
+    list-style:none;
+    height: 30px;
+    line-height: 35px;
+    display: flex;
+    background-color: rgb(226, 213, 192);
+    margin:0;
+}
+#pinfo ul li{
+    float:left;
+    flex:1;
+    text-align: center;
+    font-size:16px;
+    font-weight: bold;
+}
+
+#diagnose{
+    width: 37%;
+    height: 170px;
+    float: left;
+    box-sizing: border-box;
+    border-color: rgb(204, 153, 204);
+    border-style:solid;
+    border-width:4px;
+    border-right: none;
+    background-color:re;
+    padding-left: 180px;
+    padding-top: 5px;
+}
+#advise{
+    width: 63%;
+    height: 170px;
+    float: left;
+    box-sizing: border-box;
+    border-color: rgb(204, 153, 204);
+    border-style:solid;
+    border-width:4px;
+    border-left: none;
+    text-align:center;
+    padding-top: 5px;
+}
+#aiDetect{
+    margin-top: 10px;
+}
+#submitBlock{
+    padding-left: 330px;
+}
+#submitAdvice{
+    margin-left: 30px;
+    text-align: center;
+    width: 80px;
+    border:none;
+    background: rgb(203, 138, 219);
+    font-size: 16px;
+    color: white;
+}
+#submitDiagnose{
+    margin-top: 5px;
+    text-align: center;
+    width: 80px;
+    border:none;
+    background: rgb(203, 138, 219);
+    font-size: 16px;
+    color: white;
+}
+
+#view{
+    width: 98%;
+    height: 490px;
+    margin: 0px auto; 
+    background:gainsboro;
+}
+#Buttonarray{
+    padding-top: 45px;
+    width: 37%;
+    height: 490px;
+    float: left;
+    box-sizing: border-box;
+    border-color: rgb(204, 153, 204);
+    border-style:solid;
+    border-width:4px;
+    background:gainsboro;
+    text-align:center;
+}
+#dicomImage{
+    width: 63%;
+    height: 490px;
+    float: left;
+    box-sizing: border-box;
+    border-color: rgb(204, 153, 204);
+    border-style:solid;
+    border-width:4px;
+    text-align:center;
+}
+
