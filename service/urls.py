@@ -18,15 +18,14 @@ from django.contrib import admin
 from django.urls import path
 from django.shortcuts import HttpResponse
 from server import  views  as server_views
-# def login(request):
-#     """
-#
-#     :param request:
-#     :return:
-#     """
-#     return HttpResponse("abcdefg")
+
 urlpatterns = [
+    path('',server_views.index),
+    path('index/',server_views.index),
+    path('dcmViewer/',server_views.dcmViewer),
     path('admin/', admin.site.urls),
+    path('login/',server_views.login),
+    path('register/',server_views.register),
     path('read0/',server_views.read0),
     path('read1/',server_views.read1),
     path('read2/', server_views.read2),
@@ -37,5 +36,4 @@ urlpatterns = [
     path('read7/', server_views.read7),
     path('read8/', server_views.read8),
     path('read9/', server_views.read9),
-
 ]

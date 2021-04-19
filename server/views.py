@@ -1,11 +1,23 @@
 from django.shortcuts import render
 from django.http import FileResponse
-from server import models
+from server.models import User
 import json
 import uuid
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 # Create your views here.
+def login(request):
+    pass
+    return render(request,'login.html')
+def register(request):
+    pass
+    return render(request,'register.html')
+def index(request):
+    people_info = User.objects.all()
+    return render(request,'index.html',{'people_info':people_info})
+def dcmViewer(request):
+    people_info = User.objects.all()
+    return render(request,'dcmViewer.html',{'people_info':people_info})
 def read0(request):
     file = open('./testdcm/ImageFileName0080.dcm', 'rb')
     response = FileResponse(file)

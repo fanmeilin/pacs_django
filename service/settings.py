@@ -11,10 +11,10 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-
+import pymysql         # 一定要添加这两行！
+pymysql.install_as_MySQLdb()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -110,6 +110,18 @@ DATABASES = {
     }
 }
 
+###mysql数据库设置
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'pacs',        #数据库名字
+#         'USER': 'root',          #账号
+#         'PASSWORD': '2018',      #密码
+#         'HOST': '127.0.0.1',    #IP
+#         'PORT': '3306',                   #端口
+#     }
+# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -148,3 +160,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS=[
+    # ("css",os.path.join(STATIC_ROOT,'css')),
+    #     # ("js",os.path.join(STATIC_ROOT,'js')),
+    os.path.join(BASE_DIR,"static")
+]
+
+
