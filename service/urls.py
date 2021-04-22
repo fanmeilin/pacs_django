@@ -21,10 +21,12 @@ from server import  views  as server_views
 
 urlpatterns = [
     path('',server_views.index),
+    path('admin/', admin.site.urls),
     path('index/',server_views.index),
     path('dcmViewer/',server_views.dcmViewer),
-    path('admin/', admin.site.urls),
+    path('upload/',server_views.upload),
     path('login/',server_views.login),
+    path('logout/',server_views.logout),
     path('register/',server_views.register),
     path('read0/',server_views.read0),
     path('read1/',server_views.read1),

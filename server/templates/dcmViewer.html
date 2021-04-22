@@ -7,15 +7,13 @@
 <!--# 'name','sex','age','telephone','dete_id','id_card','isAdmin','time'-->
 <div id="info">
     <div id="pinfo">
-        {% for pacient in people_info %}
         <ul>
             <li><a href="/index/">返回主页</a></li>
-            <li>就诊编号：{{pacient.dete_id}}</li>
+            <li>就诊人编号：{{pacient.dete_id}}</li>
             <li>就诊人姓名：{{pacient.name}}</li>
-            <li>性别：{{pacient.sex}}</li>
-            <li>年龄：{{pacient.age}}</li>
+            <li>就诊人性别：{{pacient.sex}}</li>
+            <li>就诊人年龄：{{pacient.age}}</li>
         </ul>
-        {% endfor %}
     </div>
     <div id="patient">
         <form action="" method="POST" id="diagnoseResult">
@@ -60,7 +58,7 @@
         <button id="textMarker">文本标记</button>
         <button id="brush">红点标记</button>
         <button id="arrow">箭头标识</button>
-        <button id="putPcture" style="color:white;font-weight: bolder;">导入图像</button>
+        <button id="putPcture" style="color:white;font-weight: bolder;">下一位检测</button>
         <button id="detect" style="color:white;font-weight: bolder;">智能检测</button>
     </div>
     <div id="dicomImage"></div>

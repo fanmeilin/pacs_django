@@ -1,23 +1,113 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect,HttpResponse
 from django.http import FileResponse
 from server.models import User
+from .forms  import UserForm
+from .forms  import RegisterForm
+from .forms  import uploadForm
+import os
 import json
 import uuid
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 # Create your views here.
+#登录页面表单处理
+def logout(request):
+    if not request.session.get('is_login',None): #未登录就直接跳转到index
+        return redirect("/index/")
+    request.session.flush()
+    return redirect("/index/")
 def login(request):
-    pass
-    return render(request,'login.html')
+    if(request.session.get('is_login',None)): #不允许重复登录
+        return redirect('/index/')
+    message = ""
+    if(request.method=="POST"):
+        login_form = UserForm(request.POST)
+        if(login_form.is_valid()):
+            username = login_form.cleaned_data['username'] #在字典中获取具体值
+            password = login_form.cleaned_data['password']
+            try:
+                user = User.objects.get(telephone=username)
+                if user.password==password:
+                    request.session['is_login'] = True
+                    request.session['user_id'] = user.telephone
+                    request.session['user_name'] = user.name
+                    request.session['isAdmin'] = user.isAdmin
+                    return redirect('/index/')
+                else:
+                    message = "密码不正确"
+            except:
+                message = "用户不存在！"
+        return render(request,'login.html',locals()) #内置函数
+    login_form = UserForm()
+    return render(request,'login.html',locals())
 def register(request):
-    pass
-    return render(request,'register.html')
+    if request.session.get('is_login', None):
+        # 登录状态不允许注册。你可以修改这条原则！
+        return redirect("/index/")
+    if request.method == "POST":
+        register_form = RegisterForm(request.POST)
+        message = "请检查填写的内容！"
+        if register_form.is_valid():  # 获取数据
+            username = register_form.cleaned_data['username']
+            password1 = register_form.cleaned_data['password1']
+            password2 = register_form.cleaned_data['password2']
+            age = register_form.cleaned_data['age']
+            sex = register_form.cleaned_data['sex']
+            telephone = register_form.cleaned_data['telephone']
+            dete_id = register_form.cleaned_data['dete_id']
+            isAdmin = register_form.cleaned_data['isAdmin']
+            # list_display = ['name', 'sex', 'age', 'telephone', 'dete_id', 'password', 'isAdmin']
+            if password1 != password2:  # 判断两次密码是否相同
+                message = "两次输入的密码不同！"
+                return render(request, 'register.html', locals())
+            else:
+                same_name_user = User.objects.filter(telephone=telephone)
+                if same_name_user:  # 用户名唯一
+                    message = '该手机账户已被注册，请使用别的号码！'
+                    return render(request, 'register.html', locals())
+        # 当一切都OK的情况下，创建新用户
+                new_user = User.objects.create()
+                new_user.name = username
+                new_user.password = password1
+                new_user.age = age
+                new_user.telephone = telephone
+                new_user.dete_id = dete_id
+                new_user.isAdmin = isAdmin
+                new_user.sex = sex
+                new_user.save()
+                return redirect('/login/')  # 自动跳转到登录页面
+    register_form = RegisterForm()
+    return render(request, 'register.html', locals())
+def upload(request):
+    if(request.method=='GET'):
+        return render(request,'upload.html',locals())
+    elif request.method=="POST":
+        dcmImage = request.FILES.get("dcmImage", None)
+        doctorName = request.POST.get('doctorName')
+        if not dcmImage:
+            return HttpResponse("错误！未上传文件！")
+        position = os.path.join("./imageUnit",dcmImage.name)
+        f = open(position,'wb+')
+        for chunk in dcmImage.chunks():
+            f.write(chunk)
+        f.close()
+        #保存数据库信息 就诊人id 预约医生 图片路径
+        return render(request,'index.html')  # 返回客户端信息
+    else:
+        return render(request,'upload.html')
 def index(request):
     people_info = User.objects.all()
     return render(request,'index.html',{'people_info':people_info})
 def dcmViewer(request):
-    people_info = User.objects.all()
-    return render(request,'dcmViewer.html',{'people_info':people_info})
+    user = User.objects.get(telephone="123123") #筛选条件
+    # print("tele",user.sex)
+    message = ""
+    if (not (request.session.get('is_login', None)and (request.session.get('isAdmin', None)=='doctor'))):
+        # 登录状态不允许注册。你可以修改这条原则！
+        message = "请以医师身份先登录再访问dcm查看器！"
+        return render(request, 'login.html', {'message':message})  # 内置函数
+    # people_info = User.objects.all()
+    return render(request,'dcmViewer.html',{'pacient':user})
 def read0(request):
     file = open('./testdcm/ImageFileName0080.dcm', 'rb')
     response = FileResponse(file)
@@ -81,3 +171,9 @@ def read9(request):
     response['Content-Type'] = 'application/octet-stream'
     response['Content-Disposition'] = 'attachment;filename="9.dcm"'
     return response
+
+
+
+
+
+

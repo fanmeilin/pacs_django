@@ -1,16 +1,14 @@
 {% load staticfiles %}
-
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>{% block title %}base{% endblock %}</title>
-
+    <title>主页</title>
     <!-- Bootstrap -->
     <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-<!--/static/bootstrap/css/bootstrap.min.css-->
+    <link rel="stylesheet" href="/static/css/index.css">
       <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
@@ -24,13 +22,25 @@
       <a class="navbar-brand" href="#">医学影像诊断</a>
     </div>
     <ul class="nav navbar-nav navbar-right">
-       <li><a href="/dcmViewer/"><span class="glyphicon glyphicon-picture"></span>dcm查看器</a></li>
+           {% if request.session.is_login %}
+        <li><a href="#">当前在线：{{ request.session.user_name }}</a></li>
+        <li><a href="/logout/">登出</a></li>
+        {% else %}
       <li><a href="/register/"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
       <li><a href="/login/"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+        {% endif %}
+        <li><a href="/dcmViewer/"><span class="glyphicon glyphicon-picture"></span>dcm查看器</a></li>
+
     </ul>
   </div>
 </nav>
-
+<div id="zt_body">
+  <a href="/upload/">就诊人上传胸腔CT</a>
+</div>
+<!--<p>就诊人上传胸腔CT</p>-->
+<p >就诊人查询结果（结果 诊断意见 dcm图像）</p>
+<p>医生进行检测分析 （管理界面 比如诊断过的病人信息和结果信息）</p>
+<p>相关介绍信息</p>
 
     {% block content %}{% endblock %}
 
