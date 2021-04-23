@@ -15,8 +15,16 @@
               <h2 class="text-center">请预约医师</h2>
               <h3 class="text-center">预约成功后跳转主页</h3>
               <div class="form-group">
+                <label for="dete_id">就诊编号：</label>
+                <input type="text" name='dete_id' class="form-control" id="dete_id" value="{{ request.session.dete_id }}" readonly >
+              </div>
+              <div class="form-group">
                 <label for="doctorName">医生姓名：</label>
                 <input type="text" name='doctorName' class="form-control" id="doctorName" placeholder="doctorName" autofocus required>
+              </div>
+              <div class="form-group">
+                <label for="doctorid">医生编号：</label>
+                <input type="text" name='doctorid' class="form-control" id="doctorid" placeholder="doctorid" autofocus required>
               </div>
               <div class="form-group">
                 <label for="dcmImage">上传胸腔CT </label>

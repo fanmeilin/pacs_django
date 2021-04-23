@@ -22,5 +22,7 @@ class RegisterForm(forms.Form):
     password2 = forms.CharField(label="确认密码", max_length=256, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
 class uploadForm(forms.Form):
+    dete_id = fields.CharField(label="就诊编号", max_length=128)
     doctorName = fields.CharField(label="医生姓名",max_length=128)
+    doctorid = fields.CharField(label="医生编号", max_length=128)
     dcmImage = fields.FileField()

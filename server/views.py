@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.http import FileResponse
-from server.models import User
+from server.models import User,Doctor
 from .forms  import UserForm
 from .forms  import RegisterForm
 from .forms  import uploadForm
@@ -32,6 +32,7 @@ def login(request):
                     request.session['user_id'] = user.telephone
                     request.session['user_name'] = user.name
                     request.session['isAdmin'] = user.isAdmin
+                    request.session['dete_id'] = user.dete_id
                     return redirect('/index/')
                 else:
                     message = "密码不正确"
@@ -79,22 +80,58 @@ def register(request):
     register_form = RegisterForm()
     return render(request, 'register.html', locals())
 def upload(request):
+    if (not (request.session.get('is_login', None)and (request.session.get('isAdmin', None)=='pacient'))):
+        # 登录状态不允许注册。你可以修改这条原则！
+        message = "请以就诊人身份先登录再访问dcm查看器！"
+        return render(request, 'login.html', {'message': message})  # 内置函数
     if(request.method=='GET'):
         return render(request,'upload.html',locals())
-    elif request.method=="POST":
+    if request.method=="POST":
         dcmImage = request.FILES.get("dcmImage", None)
+        print(dcmImage)
         doctorName = request.POST.get('doctorName')
-        if not dcmImage:
-            return HttpResponse("错误！未上传文件！")
-        position = os.path.join("./imageUnit",dcmImage.name)
-        f = open(position,'wb+')
-        for chunk in dcmImage.chunks():
-            f.write(chunk)
-        f.close()
-        #保存数据库信息 就诊人id 预约医生 图片路径
-        return render(request,'index.html')  # 返回客户端信息
-    else:
-        return render(request,'upload.html')
+        doctorid = request.POST.get('doctorid')
+        try:
+            print("进行查找",doctorid)
+            doctor = User.objects.get(dete_id=doctorid)
+            print(doctor)
+            if not(doctor.name==doctorName):
+                message = "请核实医生的姓名以及对应编号！"
+            if (dcmImage):
+                # "dete_id","Dname", "Dtelephone", "Pname", "Ptelephone", "Pimgsrc", "Pmodelresult", "Pdoctorresult", "advise"
+                # 当一切都OK的情况下，创建医患对应信息
+                if not(request.session.get('upload_img', None)): #如果尚未提交
+                    position = os.path.join(".\imageUnit", dcmImage.name)
+                    f = open(position, 'wb+')
+                    for chunk in dcmImage.chunks():
+                        f.write(chunk)
+                    f.close()
+                    # 保存数据库信息 就诊人id 预约医生 图片路径
+                    dete_id = request.session['dete_id']
+                    Dname = doctor.name
+                    Dtelephone = doctor.telephone
+                    Pname = request.session['user_name']
+                    Ptelephone = request.session['user_id']
+                    Pimgsrc = "." + position  # 转换存储路径
+                    request.session['upload_img'] = True
+                    new_user = Doctor.objects.create()
+                    new_user.dete_id = dete_id
+                    new_user.Dname = Dname
+                    new_user.Dtelephone = Dtelephone
+                    new_user.Pname = Pname
+                    new_user.Ptelephone = Ptelephone
+                    new_user.Pimgsrc = Pimgsrc
+                    print("保存数据库")
+                    new_user.save()
+                    return redirect('/index/')
+                else:
+                    message = "已经预约过了，不可重复预约！"
+            else:
+                message = "请核实医生的姓名以及对应编号！"
+        except:
+            message = "出错！"
+        return render(request, 'upload.html', {'message': message})
+    return render(request,'upload.html')
 def index(request):
     people_info = User.objects.all()
     return render(request,'index.html',{'people_info':people_info})
