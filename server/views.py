@@ -4,6 +4,7 @@ from server.models import User,Doctor
 from .forms  import UserForm
 from .forms  import RegisterForm
 from .forms  import uploadForm
+from image_detect.function import predictImgset,readModel
 import os
 import json
 import uuid
@@ -27,6 +28,7 @@ def login(request):
             password = login_form.cleaned_data['password']
             try:
                 user = User.objects.get(telephone=username)
+                # pacient = Doctor.objects.filter(Dtelephone = username)
                 if user.password==password:
                     request.session['is_login'] = True
                     request.session['user_id'] = user.telephone
@@ -82,37 +84,43 @@ def register(request):
 def upload(request):
     if (not (request.session.get('is_login', None)and (request.session.get('isAdmin', None)=='pacient'))):
         # 登录状态不允许注册。你可以修改这条原则！
-        message = "请以就诊人身份先登录再访问dcm查看器！"
+        message = "请以就诊人身份先登录"
         return render(request, 'login.html', {'message': message})  # 内置函数
     if(request.method=='GET'):
         return render(request,'upload.html',locals())
     if request.method=="POST":
         dcmImage = request.FILES.get("dcmImage", None)
-        print(dcmImage)
+        print("是否已经预约过",dcmImage)
         doctorName = request.POST.get('doctorName')
         doctorid = request.POST.get('doctorid')
         try:
             print("进行查找",doctorid)
             doctor = User.objects.get(dete_id=doctorid)
-            print(doctor)
+            print("doctor object:",doctor)
             if not(doctor.name==doctorName):
                 message = "请核实医生的姓名以及对应编号！"
             if (dcmImage):
                 # "dete_id","Dname", "Dtelephone", "Pname", "Ptelephone", "Pimgsrc", "Pmodelresult", "Pdoctorresult", "advise"
                 # 当一切都OK的情况下，创建医患对应信息
                 if not(request.session.get('upload_img', None)): #如果尚未提交
-                    position = os.path.join(".\imageUnit", dcmImage.name)
+                    position = os.path.join(".\static\imageUnit", dcmImage.name)
+                    print("position",position)
                     f = open(position, 'wb+')
                     for chunk in dcmImage.chunks():
                         f.write(chunk)
                     f.close()
+                    #模型预测图像的诊断结果
+                    model = readModel(r"./image_detect/model200.h5")
+                    result = predictImgset(model, [position])
+                    print("预测结果：",result)
                     # 保存数据库信息 就诊人id 预约医生 图片路径
                     dete_id = request.session['dete_id']
                     Dname = doctor.name
                     Dtelephone = doctor.telephone
                     Pname = request.session['user_name']
                     Ptelephone = request.session['user_id']
-                    Pimgsrc = "." + position  # 转换存储路径
+                    # Pimgsrc = "." + position  # 转换存储路径
+                    Pimgsrc = os.path.join("\static\imageUnit", dcmImage.name) #静态文件的形式进行存储
                     request.session['upload_img'] = True
                     new_user = Doctor.objects.create()
                     new_user.dete_id = dete_id
@@ -121,8 +129,10 @@ def upload(request):
                     new_user.Pname = Pname
                     new_user.Ptelephone = Ptelephone
                     new_user.Pimgsrc = Pimgsrc
+                    new_user.Pmodelresult = result[0]
                     print("保存数据库")
                     new_user.save()
+                    request.session['upload_img'] = True
                     return redirect('/index/')
                 else:
                     message = "已经预约过了，不可重复预约！"
@@ -135,24 +145,44 @@ def upload(request):
 def index(request):
     people_info = User.objects.all()
     return render(request,'index.html',{'people_info':people_info})
+def dcmTemp(request):
+    return render(request,'dcmtemp.html')
 def dcmViewer(request):
-    user = User.objects.get(telephone="123123") #筛选条件
-    # print("tele",user.sex)
-    message = ""
     if (not (request.session.get('is_login', None)and (request.session.get('isAdmin', None)=='doctor'))):
         # 登录状态不允许注册。你可以修改这条原则！
         message = "请以医师身份先登录再访问dcm查看器！"
         return render(request, 'login.html', {'message':message})  # 内置函数
-    # people_info = User.objects.all()
-    return render(request,'dcmViewer.html',{'pacient':user})
+    # people_info = User.objects.all() #分页
+    # 测试
+    try:
+        pacient = User.objects.get(telephone="15700000001") #筛选条件
+        dignosetable = Doctor.objects.get(Ptelephone="13700000001")
+    except:
+        return HttpResponse("暂无病人")
+    userzh = request.session['user_id']
+    pacientSet = Doctor.objects.filter(Dtelephone = userzh)
+    print(pacientSet)
+    return render(request,'dcmViewer.html',{'pacient':pacient,'dignosetable':dignosetable})
+def read(request):
+    # return HttpResponse("Hello World")
+    src = request.GET.get('src')
+    print("获取下载路径：",src)
+    file = open(src, 'rb')
+    response = FileResponse(file)
+    response['Content-Type'] = 'application/octet-stream'
+    file_name = os.path.split(src)[-1]
+    print("文件名:",file_name)
+    response['Content-Disposition'] = 'attachment;filename={}'.format(file_name)
+    response["Access-Control-Allow-Headers"] = "Access-Control-Allow-Origin"
+    return response
 def read0(request):
+    src = request.GET.get('src')
     file = open('./testdcm/ImageFileName0080.dcm', 'rb')
     response = FileResponse(file)
     response['Content-Type'] = 'application/octet-stream'
     response['Content-Disposition'] = 'attachment;filename="0.dcm"'
     # response["Access-Control-Allow-Headers"] = "Access-Control-Allow-Origin"
     return response
-
 def read1(request):
     # file = open('./testdcm/ImageFileName0081.dcm', 'rb')
     file = open('./testdcm/ImageFileName0081.dcm','rb')

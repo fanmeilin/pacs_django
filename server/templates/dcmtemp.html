@@ -9,30 +9,30 @@
     <div id="pinfo">
         <ul>
             <li><a href="/index/">返回主页</a></li>
-            <li>就诊人编号：{{pacient.dete_id}}</li>
-            <li>就诊人姓名：{{pacient.name}}</li>
-            <li>就诊人性别：{{pacient.sex}}</li>
-            <li>就诊人年龄：{{pacient.age}}</li>
+            <li>就诊人编号：123123</li>
+            <li>就诊人姓名：小李</li>
+            <li>就诊人性别：男</li>
+            <li>就诊人年龄：55</li>
         </ul>
     </div>
     <div id="patient">
         <form action="" method="POST" id="diagnoseResult">
             <div id="diagnose">
-            <p class="title">诊断结果：无</p>
+            <p class="title">诊断结果：</p>
             <input name="diagnose" type="radio" value="normal" id="normal"><label for="normal">正常</label>
             <br>
             <input name="diagnose" type="radio" value="pneumonia" id="pneumonia"><label for="pneumonia">普通肺炎</label>
             <br>
             <input name="diagnose" type="radio" value="covid" id="covid"><label for="covid">新型冠状病毒性肺炎</label>
-            <div id="aiDetect">智能检测结果： <span style="font-weight: bold;"> {{dignosetable.Pmodelresult}}</span></div>
+            <div id="aiDetect">智能检测结果： <span style="font-weight: bold;"> 正常 </span></div>
             <input type="submit" name="submitdiagnose" id="submitDiagnose">
             </div>
         </form>
-        <form action="" method="POST" id="adviseResult">  
+        <form action="" method="POST" id="adviseResult">
             <div id="advise">
-            <p class="title">诊断建议：</p> 
+            <p class="title">诊断建议：</p>
             <textarea rows="6" cols="75"></textarea>
-            <div id="submitBlock"><span id="doctor">医生姓名：李四 </span><input type="submit" name="submitAdvice" id="submitAdvice"></div> 
+            <div id="submitBlock"><span id="doctor">医生姓名：李四 </span><input type="submit" name="submitAdvice" id="submitAdvice"></div>
             </div>
         </form>
     </div>
@@ -54,14 +54,14 @@
         <button id="bidirectional">双向工具</button>
         <button id="cobbangle">柯布角测量</button>
         <button id="freehanroi">绘制ROI</button>
-        <button id="rectangleRoi">矩形ROI</button>  
+        <button id="rectangleRoi">矩形ROI</button>
         <button id="textMarker">文本标记</button>
         <button id="brush">红点标记</button>
         <button id="arrow">箭头标识</button>
         <button id="putPcture" style="color:white;font-weight: bolder;">下一位检测</button>
         <button id="detect" style="color:white;font-weight: bolder;">智能检测</button>
     </div>
-    <div id="dicomImage"><img src="{{dignosetable.Pimgsrc}}" alt="" width="700" height="486" style="margin-top:1px"></div>
+    <div id="dicomImage"></div>
 </div>
 </body>
 <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
@@ -72,6 +72,6 @@
 <script src="https://unpkg.com/cornerstone-tools@4.20.1/dist/cornerstoneTools.js"></script>
 <script src="https://unpkg.com/dicom-parser@1.8.5/dist/dicomParser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
-<!--<script type="text/JavaScript" src="/static/js/temp.js"></script>-->
-<!--<script type="text/JavaScript" src="/static/js/modelPred.js"></script>-->
+<script type="text/JavaScript" src="/static/js/buttonFunc.js"></script>
+<script type="text/JavaScript" src="/static/js/modelPred.js"></script>
 </html>

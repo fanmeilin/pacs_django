@@ -28,6 +28,8 @@ urlpatterns = [
     path('login/',server_views.login),
     path('logout/',server_views.logout),
     path('register/',server_views.register),
+    path('dcmTemp/',server_views.dcmTemp),
+    path(r'read/',server_views.read),
     path('read0/',server_views.read0),
     path('read1/',server_views.read1),
     path('read2/', server_views.read2),

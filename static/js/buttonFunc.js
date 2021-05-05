@@ -4,7 +4,7 @@ cornerstoneTools.external.Hammer = Hammer;
 cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
 cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
 //'dicomweb' 'wadouri'  'http'
-var imageId = "wadouri:http://127.0.0.1:8000/read1";
+
 var imageIds = [
 "wadouri:http://127.0.0.1:8000/read0",
 "wadouri:http://127.0.0.1:8000/read1",
@@ -32,10 +32,7 @@ cornerstone.loadAndCacheImage(imageIds[0]).then(function(image) {
     cornerstone.displayImage(element, image)
     cornerstoneTools.addStackStateManager(element, ['stack'])
     cornerstoneTools.addToolState(element, 'stack', stack)
-    // console.log("image----")
-    // console.log(image.data)
-    // console.log("element--")
-     console.log(element)
+    console.log(element)
 })
 cornerstoneTools.addTool(StackScrollMouseWheelTool)
 cornerstoneTools.setToolActive('StackScrollMouseWheel', { })

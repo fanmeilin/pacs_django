@@ -17,7 +17,7 @@ button{
 }
 #info{
     width: 98%;
-    height: 200px;
+    height: 210px;
     margin: 0px auto; 
     background:rgb(223, 217, 217);
 }
@@ -27,7 +27,7 @@ button{
 }
 #pinfo ul{
     list-style:none;
-    height: 30px;
+    height: 35px;
     line-height: 35px;
     display: flex;
     background-color: rgb(226, 213, 192);
@@ -43,7 +43,7 @@ button{
 
 #diagnose{
     width: 37%;
-    height: 170px;
+    height: 180px;
     float: left;
     box-sizing: border-box;
     border-color: rgb(204, 153, 204);
@@ -56,7 +56,7 @@ button{
 }
 #advise{
     width: 63%;
-    height: 170px;
+    height: 180px;
     float: left;
     box-sizing: border-box;
     border-color: rgb(204, 153, 204);
@@ -93,14 +93,14 @@ button{
 
 #view{
     width: 98%;
-    height: 490px;
+    height: 495px;
     margin: 0px auto; 
     background:gainsboro;
 }
 #Buttonarray{
     padding-top: 45px;
     width: 37%;
-    height: 490px;
+    height: 495px;
     float: left;
     box-sizing: border-box;
     border-color: rgb(204, 153, 204);
@@ -111,8 +111,9 @@ button{
 }
 #dicomImage{
     width: 63%;
-    height: 490px;
+    height: 495px;
     float: left;
+    background:rgb(58, 58, 58);
     box-sizing: border-box;
     border-color: rgb(204, 153, 204);
     border-style:solid;
