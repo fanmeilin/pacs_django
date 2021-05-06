@@ -21,7 +21,7 @@ def processing(img_path):
     return data
 #模型预测结果写入
 def predictImgset(model,predict_dir):
-    className = ["新型冠状肺炎", "未见感染", "普通肺炎"]
+    className = ["新型冠状病毒性肺炎", "未见感染", "普通肺炎"]
     data = processing(predict_dir)
     pre_y = model.predict(data)
     # print(pre_y)

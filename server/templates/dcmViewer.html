@@ -10,29 +10,29 @@
         <ul>
             <li><a href="/index/">返回主页</a></li>
             <li>就诊人编号：{{pacient.dete_id}}</li>
-            <li>就诊人姓名：{{pacient.name}}</li>
-            <li>就诊人性别：{{pacient.sex}}</li>
-            <li>就诊人年龄：{{pacient.age}}</li>
+            <li>就诊人姓名：{{pacient.Pname}}</li>
+            <li>就诊人性别：{{pacient.Psex}}</li>
+            <li>就诊人年龄：{{pacient.Page}}</li>
         </ul>
     </div>
     <div id="patient">
         <form action="" method="POST" id="diagnoseResult">
             <div id="diagnose">
-            <p class="title">诊断结果：无</p>
-            <input name="diagnose" type="radio" value="normal" id="normal"><label for="normal">正常</label>
+            <p class="title">医师诊断</p>
+            <input name="diagnose" type="radio" value="正常" id="normal"><label for="normal">正常</label>
             <br>
-            <input name="diagnose" type="radio" value="pneumonia" id="pneumonia"><label for="pneumonia">普通肺炎</label>
+            <input name="diagnose" type="radio" value="普通肺炎" id="pneumonia"><label for="pneumonia">普通肺炎</label>
             <br>
-            <input name="diagnose" type="radio" value="covid" id="covid"><label for="covid">新型冠状病毒性肺炎</label>
-            <div id="aiDetect">智能检测结果： <span style="font-weight: bold;"> {{dignosetable.Pmodelresult}}</span></div>
-            <input type="submit" name="submitdiagnose" id="submitDiagnose">
+            <input name="diagnose" type="radio" value="新型冠状病毒性肺炎" id="covid"><label for="covid">新型冠状病毒性肺炎</label>
+            <div id="aiDetect">智能检测结果： <span id="Pmodelresult" style="font-weight: bold;">无</span></div>
+            <input type="button" name="submitdiagnose" id="submitDiagnose" value="提交">
             </div>
         </form>
         <form action="" method="POST" id="adviseResult">  
             <div id="advise">
-            <p class="title">诊断建议：</p> 
-            <textarea rows="6" cols="75"></textarea>
-            <div id="submitBlock"><span id="doctor">医生姓名：李四 </span><input type="submit" name="submitAdvice" id="submitAdvice"></div> 
+            <p class="title">诊断建议：</p>
+            <textarea id="note" rows="6" cols="75"></textarea>
+            <div id="submitBlock"><span id="doctor">医生姓名：{{pacient.Dname}} </span><input type="button" name="submitAdvice" id="submitAdvice" value="提交"></div>
             </div>
         </form>
     </div>
@@ -58,11 +58,21 @@
         <button id="textMarker">文本标记</button>
         <button id="brush">红点标记</button>
         <button id="arrow">箭头标识</button>
-        <button id="putPcture" style="color:white;font-weight: bolder;">下一位检测</button>
         <button id="detect" style="color:white;font-weight: bolder;">智能检测</button>
+        {% if diagnose.has_previous %}
+        <button id="putPcture1" style="color:white;font-weight: bolder;"><a href="/dcmViewer?p={{diagnose.previous_page_number}}" style="text-decoration:none;color: white;">上一位检测</a></button>
+        {% else %}
+        <button id="putPcture2" onclick="First()" style="color:white;font-weight: bolder;">上一位检测</button>
+        {% endif %}
+        {% if diagnose.has_next %}
+        <button id="putPcture3" style="color:white;font-weight: bolder;"><a href="/dcmViewer?p={{diagnose.next_page_number}}" style="text-decoration:none;color: white;">下一位检测</a></button>
+        {% else %}
+        <button id="putPcture4" onclick="Last()" style="color:white;font-weight: bolder;">下一位检测</button>
+        {% endif %}
     </div>
-    <div id="dicomImage"><img src="{{dignosetable.Pimgsrc}}" alt="" width="700" height="486" style="margin-top:1px"></div>
+    <div id="dicomImage"><img src="{{pacient.Pimgsrc}}" alt="" width="700" height="486" style="margin-top:1px"></div>
 </div>
+
 </body>
 <script src="https://unpkg.com/hammerjs@2.0.8/hammer.js"></script>
 <script src="https://unpkg.com/cornerstone-core@2.3.0/dist/cornerstone.js"></script>
@@ -72,6 +82,56 @@
 <script src="https://unpkg.com/cornerstone-tools@4.20.1/dist/cornerstoneTools.js"></script>
 <script src="https://unpkg.com/dicom-parser@1.8.5/dist/dicomParser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript">
+    function Last(){
+        alert("已经是最后一页！");
+    }
+    function First(){
+        alert("已经是第一页！");
+    }
+    $(document).ready(function(){
+        $("#detect").click(function(){
+           alert("智能诊断结果为："+"{{pacient.Pmodelresult}}");
+           $('#Pmodelresult').text("{{pacient.Pmodelresult}}");
+        });
+    });
+    $(document).ready(function(){
+        $("#submitDiagnose").click(function(){
+           $.ajax({
+                type:"POST",
+                url:"/ajex_detect_Dresult/",
+                data:{
+                    "Pdoctorresult":$('input:radio:checked').val(),
+                    "dete_id":"{{pacient.dete_id}}"
+                },
+                dataType:"json",
+                success:function(data){
+                       console.log(data.message);
+                       alert(data.message);
+                }
+           });
+        });
+    });
+
+    $(document).ready(function(){
+        $("#submitAdvice").click(function(){
+           $.ajax({
+                type:"POST",
+                url:"/ajex_detect_Dadvice/",
+                data:{
+                    "adviseResult": $("#note").val(),
+                    "dete_id":"{{pacient.dete_id}}"
+                },
+                dataType:"json",
+                success:function(data){
+                       console.log(data.message);
+                       alert(data.message);
+                }
+           });
+        });
+    });
+</script>
 <!--<script type="text/JavaScript" src="/static/js/temp.js"></script>-->
 <!--<script type="text/JavaScript" src="/static/js/modelPred.js"></script>-->
 </html>

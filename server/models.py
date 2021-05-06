@@ -20,11 +20,17 @@ class User(models.Model):
 # Create your models here.
 # 'name','sex','age','telephone','dete_id','id_card','password','isAdmin','time'
 class Doctor(models.Model):
+    gender = (
+        ('男', "男"),
+        ('女', "女"),
+    )
     dete_id = models.CharField(u'就诊编号', max_length=20, unique=True, default="")
     Dname = models.CharField(u'医生姓名',max_length=1282,default="")
     Dtelephone = models.CharField(u'医生电话',max_length=256,default="")
     Pname = models.CharField(u'就诊人姓名',max_length=20,default="")
     Ptelephone = models.CharField(u'就诊人电话', max_length=256,default="")
+    Psex = models.CharField(u"就诊人性别", max_length=32, choices=gender, default='男')
+    Page = models.CharField(u"就诊人年龄",max_length=128,default="")
     Pimgsrc =  models.CharField(u'图像路径', max_length=256,default="")
     Pmodelresult = models.CharField(u'模型预测结果', max_length=256,default="无")
     Pdoctorresult = models.CharField(u'医生判断结果', max_length=256,default="")

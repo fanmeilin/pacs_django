@@ -3,9 +3,12 @@ from django.http import FileResponse
 from server.models import User,Doctor
 from .forms  import UserForm
 from .forms  import RegisterForm
+from django.http import JsonResponse
 from .forms  import uploadForm
 from image_detect.function import predictImgset,readModel
 import os
+from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 import json
 import uuid
 from django.core import serializers
@@ -96,7 +99,11 @@ def upload(request):
         try:
             print("进行查找",doctorid)
             doctor = User.objects.get(dete_id=doctorid)
-            print("doctor object:",doctor)
+            userzh = request.session['user_id']
+            print(userzh)
+            print("doctor object:", doctor)
+            pacient = User.objects.get(telephone = userzh )
+            print("pacient object",pacient)
             if not(doctor.name==doctorName):
                 message = "请核实医生的姓名以及对应编号！"
             if (dcmImage):
@@ -119,6 +126,8 @@ def upload(request):
                     Dtelephone = doctor.telephone
                     Pname = request.session['user_name']
                     Ptelephone = request.session['user_id']
+                    Psex = pacient.sex
+                    Page = pacient.age
                     # Pimgsrc = "." + position  # 转换存储路径
                     Pimgsrc = os.path.join("\static\imageUnit", dcmImage.name) #静态文件的形式进行存储
                     request.session['upload_img'] = True
@@ -127,6 +136,8 @@ def upload(request):
                     new_user.Dname = Dname
                     new_user.Dtelephone = Dtelephone
                     new_user.Pname = Pname
+                    new_user.Psex = Psex
+                    new_user.Page = Page
                     new_user.Ptelephone = Ptelephone
                     new_user.Pimgsrc = Pimgsrc
                     new_user.Pmodelresult = result[0]
@@ -147,6 +158,38 @@ def index(request):
     return render(request,'index.html',{'people_info':people_info})
 def dcmTemp(request):
     return render(request,'dcmtemp.html')
+@csrf_exempt
+def ajex_detect_Dresult(request):
+    Pdoctorresult = request.POST.get('Pdoctorresult')
+    dete_id = request.POST.get('dete_id')
+    # print("诊断结果:",Pdoctorresult)
+    # print("id:",dete_id)
+    message = "无"
+    try:
+        obj = Doctor.objects.get(dete_id=dete_id)
+        obj.Pdoctorresult = Pdoctorresult
+        obj.save()
+        message = "诊断结果成功上传系统！"
+    except:
+        message="诊断结果上传出错！"
+    print(message)
+    return JsonResponse({'message': message})
+
+@csrf_exempt
+def ajex_detect_Dadvice(request):
+    adviseResult = request.POST.get('adviseResult')
+    dete_id = request.POST.get('dete_id')
+    message = "无"
+    try:
+        obj = Doctor.objects.get(dete_id=dete_id)
+        obj.advise = adviseResult
+        obj.save()
+        message = "诊断建议成功上传至系统！"
+    except:
+        message="诊断建议上传出错！"
+    print(message)
+    return JsonResponse({'message':message})
+
 def dcmViewer(request):
     if (not (request.session.get('is_login', None)and (request.session.get('isAdmin', None)=='doctor'))):
         # 登录状态不允许注册。你可以修改这条原则！
@@ -154,15 +197,29 @@ def dcmViewer(request):
         return render(request, 'login.html', {'message':message})  # 内置函数
     # people_info = User.objects.all() #分页
     # 测试
-    try:
-        pacient = User.objects.get(telephone="15700000001") #筛选条件
-        dignosetable = Doctor.objects.get(Ptelephone="13700000001")
-    except:
-        return HttpResponse("暂无病人")
+    current_page = request.GET.get('p')
+    print("获取当前目录", current_page)
+    if not current_page:
+        current_page=1
+    current_page = int(current_page)
+    print("获取当前目录(int)",current_page)
     userzh = request.session['user_id']
-    pacientSet = Doctor.objects.filter(Dtelephone = userzh)
-    print(pacientSet)
-    return render(request,'dcmViewer.html',{'pacient':pacient,'dignosetable':dignosetable})
+    diagnose_list = Doctor.objects.filter(Dtelephone=userzh)  # 查找对应账号的订单
+    # print("查找订单", diagnose_list)
+    paginator = Paginator(diagnose_list, 1)
+    if (diagnose_list.count)==0:
+        return HttpResponse("暂无病人")
+    try:
+        diagnose = paginator.page(current_page)
+        # pacient = User.objects.get(telephone="15700000001") #筛选条件 就诊人的具体信息
+        # dignosetable = Doctor.objects.get(Dtelephone="13700000001") #医生订单
+    except PageNotAnInteger:
+        diagnose = paginator.page(1)
+    except EmptyPage:
+        diagnose = paginator.page(paginator.num_pages)
+    pacient = diagnose.object_list[0]
+    # print("就诊人",pacient)
+    return render(request,'dcmViewer.html',{'pacient':pacient,'diagnose':diagnose})
 def read(request):
     # return HttpResponse("Hello World")
     src = request.GET.get('src')

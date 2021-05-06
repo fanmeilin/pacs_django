@@ -70,16 +70,20 @@ button{
     margin-top: 10px;
 }
 #submitBlock{
-    padding-left: 330px;
+    margin-top:5px;
+    padding-left: 200px;
 }
 #submitAdvice{
-    margin-left: 30px;
+    margin-right: 50px;
     text-align: center;
     width: 80px;
     border:none;
     background: rgb(203, 138, 219);
     font-size: 16px;
     color: white;
+    position: absolute;
+    top:183px;
+    right:163px;
 }
 #submitDiagnose{
     margin-top: 5px;

@@ -29,6 +29,8 @@ urlpatterns = [
     path('logout/',server_views.logout),
     path('register/',server_views.register),
     path('dcmTemp/',server_views.dcmTemp),
+    path('ajex_detect_Dresult/',server_views.ajex_detect_Dresult),
+    path('ajex_detect_Dadvice/',server_views.ajex_detect_Dadvice),
     path(r'read/',server_views.read),
     path('read0/',server_views.read0),
     path('read1/',server_views.read1),
